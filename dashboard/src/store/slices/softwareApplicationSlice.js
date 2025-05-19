@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const softwareApplicationSlice = createSlice({
   name: "softwareApplications",
   initialState: {
@@ -10,7 +12,7 @@ const softwareApplicationSlice = createSlice({
     message: null,
   },
   reducers: {
-    getAllsoftwareApplicationsRequest(state, action) {
+    getAllsoftwareApplicationsRequest(state) {
       state.softwareApplications = [];
       state.error = null;
       state.loading = true;
@@ -21,49 +23,46 @@ const softwareApplicationSlice = createSlice({
       state.loading = false;
     },
     getAllsoftwareApplicationsFailed(state, action) {
-      state.softwareApplications = state.softwareApplications;
       state.error = action.payload;
       state.loading = false;
     },
-    addNewsoftwareApplicationsRequest(state, action) {
+    addNewsoftwareApplicationsRequest(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
     },
     addNewsoftwareApplicationsSuccess(state, action) {
-      state.error = null;
       state.loading = false;
       state.message = action.payload;
+      state.error = null;
     },
     addNewsoftwareApplicationsFailed(state, action) {
       state.error = action.payload;
       state.loading = false;
       state.message = null;
     },
-    deletesoftwareApplicationsRequest(state, action) {
+    deletesoftwareApplicationsRequest(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
     },
     deletesoftwareApplicationsSuccess(state, action) {
-      state.error = null;
       state.loading = false;
       state.message = action.payload;
+      state.error = null;
     },
     deletesoftwareApplicationsFailed(state, action) {
       state.error = action.payload;
       state.loading = false;
       state.message = null;
     },
-    resetSoftwareApplicationSlice(state, action) {
+    resetSoftwareApplicationSlice(state) {
       state.error = null;
-      state.softwareApplications = state.softwareApplications;
       state.message = null;
       state.loading = false;
     },
-    clearAllErrors(state, action) {
+    clearAllErrors(state) {
       state.error = null;
-      state.softwareApplications = state.softwareApplications;
     },
   },
 });
@@ -74,7 +73,7 @@ export const getAllSoftwareApplications = () => async (dispatch) => {
   );
   try {
     const response = await axios.get(
-      "https://mern-stack-portfolio-backend-code.onrender.com/api/v1/softwareapplication/getall",
+      `${BACKEND_URL}/api/v1/softwareapplication/getall`,
       { withCredentials: true }
     );
     dispatch(
@@ -98,7 +97,7 @@ export const addNewSoftwareApplication = (data) => async (dispatch) => {
   );
   try {
     const response = await axios.post(
-      "https://mern-stack-portfolio-backend-code.onrender.com/api/v1/softwareapplication/add",
+      `${BACKEND_URL}/api/v1/softwareapplication/add`,
       data,
       {
         withCredentials: true,
@@ -126,7 +125,7 @@ export const deleteSoftwareApplication = (id) => async (dispatch) => {
   );
   try {
     const response = await axios.delete(
-      `https://mern-stack-portfolio-backend-code.onrender.com/api/v1/softwareapplication/delete/${id}`,
+      `${BACKEND_URL}/api/v1/softwareapplication/delete/${id}`,
       {
         withCredentials: true,
       }

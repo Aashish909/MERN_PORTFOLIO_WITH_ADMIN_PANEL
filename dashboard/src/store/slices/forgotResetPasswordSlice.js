@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const forgotResetPassSlice = createSlice({
   name: "forgotPassword",
   initialState: {
@@ -9,7 +11,7 @@ const forgotResetPassSlice = createSlice({
     message: null,
   },
   reducers: {
-    forgotPasswordRequest(state, action) {
+    forgotPasswordRequest(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
@@ -24,7 +26,7 @@ const forgotResetPassSlice = createSlice({
       state.error = action.payload;
       state.message = null;
     },
-    resetPasswordRequest(state, action) {
+    resetPasswordRequest(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
@@ -39,9 +41,8 @@ const forgotResetPassSlice = createSlice({
       state.error = action.payload;
       state.message = null;
     },
-    clearAllErrors(state, action) {
+    clearAllErrors(state) {
       state.error = null;
-      state = state;
     },
   },
 });
@@ -49,21 +50,18 @@ const forgotResetPassSlice = createSlice({
 export const forgotPassword = (email) => async (dispatch) => {
   try {
     dispatch(forgotResetPassSlice.actions.forgotPasswordRequest());
-    console.log(email);
     const response = await axios.post(
-      "https://mern-stack-portfolio-backend-code.onrender.com/api/v1/user/password/forgot",
+      `${BACKEND_URL}/password/forgot`,
       { email },
       { withCredentials: true, headers: { "Content-Type": "application/json" } }
     );
-    console.log(response);
     dispatch(
       forgotResetPassSlice.actions.forgotPasswordSuccess(response.data.message)
     );
   } catch (error) {
-    console.log(error);
     dispatch(
       forgotResetPassSlice.actions.forgotPasswordFailed(
-        error.response.data.message
+        error.response?.data?.message || error.message
       )
     );
   }
@@ -74,22 +72,20 @@ export const resetPassword =
     try {
       dispatch(forgotResetPassSlice.actions.resetPasswordRequest());
       const response = await axios.put(
-        ` https://mern-stack-portfolio-backend-code.onrender.com/api/v1/user/password/reset/${token}`,
+        `${BACKEND_URL}/password/reset/${token}`,
         { password, confirmPassword },
         {
           withCredentials: true,
           headers: { "Content-Type": "application/json" },
         }
       );
-      console.log(response);
       dispatch(
         forgotResetPassSlice.actions.resetPasswordSuccess(response.data.message)
       );
     } catch (error) {
-      console.log(error);
       dispatch(
         forgotResetPassSlice.actions.resetPasswordFailed(
-          error.response.data.message
+          error.response?.data?.message || error.message
         )
       );
     }

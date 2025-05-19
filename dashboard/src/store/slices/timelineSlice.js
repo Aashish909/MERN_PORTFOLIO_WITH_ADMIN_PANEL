@@ -1,6 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+// Dynamic backend URL from environment
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const timelineSlice = createSlice({
   name: "timeline",
   initialState: {
@@ -10,7 +13,7 @@ const timelineSlice = createSlice({
     message: null,
   },
   reducers: {
-    getAllTimelineRequest(state, action) {
+    getAllTimelineRequest(state) {
       state.timeline = [];
       state.error = null;
       state.loading = true;
@@ -21,11 +24,10 @@ const timelineSlice = createSlice({
       state.loading = false;
     },
     getAllTimelineFailed(state, action) {
-      state.timeline = state.timeline;
       state.error = action.payload;
       state.loading = false;
     },
-    addNewTimelineRequest(state, action) {
+    addNewTimelineRequest(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
@@ -40,7 +42,7 @@ const timelineSlice = createSlice({
       state.loading = false;
       state.message = null;
     },
-    deleteTimelineRequest(state, action) {
+    deleteTimelineRequest(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
@@ -55,26 +57,24 @@ const timelineSlice = createSlice({
       state.loading = false;
       state.message = null;
     },
-    resetTimelineSlice(state, action) {
+    resetTimelineSlice(state) {
       state.error = null;
-      state.timeline = state.timeline;
       state.message = null;
       state.loading = false;
     },
-    clearAllErrors(state, action) {
+    clearAllErrors(state) {
       state.error = null;
-      state = state.timeline;
     },
   },
 });
 
+// Thunks
 export const getAllTimeline = () => async (dispatch) => {
   dispatch(timelineSlice.actions.getAllTimelineRequest());
   try {
-    const response = await axios.get(
-      "https://mern-stack-portfolio-backend-code.onrender.com/api/v1/timeline/getall",
-      { withCredentials: true }
-    );
+    const response = await axios.get(`${BACKEND_URL}/api/v1/timeline/getall`, {
+      withCredentials: true,
+    });
     dispatch(
       timelineSlice.actions.getAllTimelineSuccess(response.data.timelines)
     );
@@ -90,7 +90,7 @@ export const addNewTimeline = (data) => async (dispatch) => {
   dispatch(timelineSlice.actions.addNewTimelineRequest());
   try {
     const response = await axios.post(
-      "https://mern-stack-portfolio-backend-code.onrender.com/api/v1/timeline/add",
+      `${BACKEND_URL}/api/v1/timeline/add`,
       data,
       {
         withCredentials: true,
@@ -107,14 +107,13 @@ export const addNewTimeline = (data) => async (dispatch) => {
     );
   }
 };
+
 export const deleteTimeline = (id) => async (dispatch) => {
   dispatch(timelineSlice.actions.deleteTimelineRequest());
   try {
     const response = await axios.delete(
-      `https://mern-stack-portfolio-backend-code.onrender.com/api/v1/timeline/delete/${id}`,
-      {
-        withCredentials: true,
-      }
+      `${BACKEND_URL}/api/v1/timeline/delete/${id}`,
+      { withCredentials: true }
     );
     dispatch(
       timelineSlice.actions.deleteTimelineSuccess(response.data.message)

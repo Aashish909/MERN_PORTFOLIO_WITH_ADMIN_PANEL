@@ -14,7 +14,7 @@ import {
   getAllMessages,
   resetMessagesSlice,
 } from "@/store/slices/messageSlice";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import SpecialLoadingButton from "./SpecialLoadingButton";
@@ -30,6 +30,8 @@ const Messages = () => {
     (state) => state.messages
   );
 
+  console.log("Messages State:", { messages, loading, error, message });
+
   const [messageId, setMessageId] = useState("");
   const handleMessageDelete = (id) => {
     setMessageId(id);
@@ -37,23 +39,32 @@ const Messages = () => {
   };
 
   const dispatch = useDispatch();
+  
   useEffect(() => {
+    console.log("Fetching messages...");
+    dispatch(getAllMessages());
+  }, [dispatch]);
+
+  useEffect(() => {
+    console.log("Messages updated:", messages);
     if (error) {
+      console.error("Messages error:", error);
       toast.error(error);
       dispatch(clearAllMessageErrors());
     }
     if (message) {
+      console.log("Messages success:", message);
       toast.success(message);
       dispatch(resetMessagesSlice());
       dispatch(getAllMessages());
     }
-  }, [dispatch, error, message, loading]);
+  }, [dispatch, error, message, loading, messages]);
 
   return (
     <>
       <div className="min-h-[100vh] sm:gap-4 sm:py-4 sm:pl-20">
-        <Tabs>
-          <TabsContent>
+        <Tabs defaultValue="messages">
+          <TabsContent value="messages">
             <Card>
               <CardHeader className="flex gap-4 sm:justify-between sm:flex-row sm:items-center">
                 <CardTitle>Messages</CardTitle>
@@ -62,8 +73,10 @@ const Messages = () => {
                 </Button>
               </CardHeader>
               <CardContent className="grid sm:grid-cols-2 gap-4">
-                {messages && messages.length > 0 ? (
+                {console.log("Rendering messages:", messages)}
+                {messages && Array.isArray(messages) && messages.length > 0 ? (
                   messages.map((element) => {
+                    console.log("Rendering message element:", element);
                     return (
                       <Card key={element._id} className="grid gap-2">
                         <CardDescription className="text-slate-950">
@@ -79,7 +92,7 @@ const Messages = () => {
                           {element.message}
                         </CardDescription>
                         <CardFooter className="justify-end">
-                          {loading && (messageId === element._id) ? (
+                          {loading && messageId === element._id ? (
                             <SpecialLoadingButton
                               content={"Deleting"}
                               width={"w-32"}
@@ -98,7 +111,7 @@ const Messages = () => {
                   })
                 ) : (
                   <CardHeader className="text-2xl">
-                    No Messages Found!
+                    {loading ? "Loading messages..." : "No Messages Found!"}
                   </CardHeader>
                 )}
               </CardContent>

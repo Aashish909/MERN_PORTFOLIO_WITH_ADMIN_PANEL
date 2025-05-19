@@ -16,10 +16,12 @@ const ProjectView = () => {
   const [projectBannerPreview, setProjectBannerPreview] = useState("");
   const { id } = useParams();
 
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     const getProject = async () => {
       await axios
-        .get(`https://mern-stack-portfolio-backend-code.onrender.com/api/v1/project/get/${id}`, {
+        .get(`${BACKEND_URL}/api/v1/project/get/${id}`, {
           withCredentials: true,
         })
         .then((res) => {

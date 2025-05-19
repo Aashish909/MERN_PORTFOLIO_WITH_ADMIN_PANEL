@@ -5,6 +5,8 @@ import axios from "axios";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const Contact = () => {
   const [senderName, setSenderName] = useState("");
   const [subject, setSubject] = useState("");
@@ -15,7 +17,7 @@ const Contact = () => {
     setLoading(true);
     await axios
       .post(
-        "https://mern-stack-portfolio-backend-code.onrender.com/api/v1/message/send",
+        `${BACKEND_URL}/api/v1/message/send`,
         { senderName, subject, message },
         {
           withCredentials: true,
@@ -49,8 +51,10 @@ const Contact = () => {
             CONTACT
             <span className="text-tubeLight-effect font-extrabold">ME</span>
           </h1>
-          <span className="absolute w-full h-1 top-7 sm:top-7 
-          md:top-8 lg:top-11 z-[-1] bg-slate-200"></span>
+          <span
+            className="absolute w-full h-1 top-7 sm:top-7 
+          md:top-8 lg:top-11 z-[-1] bg-slate-200"
+          ></span>
         </div>
         <form onSubmit={handleMessage} className="flex flex-col gap-6">
           <div className="flex flex-col gap-2 px-1.5">

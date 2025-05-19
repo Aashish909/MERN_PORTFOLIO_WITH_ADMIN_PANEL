@@ -8,9 +8,10 @@ import { sendEmail } from "../utils/sendEmail.js";
 
 export const register = catchAsyncErrors(async (req, res, next) => {
   if (!req.files || Object.keys(req.files).length === 0) {
-    return next(new ErrorHandler("Avatar Required!", 400));
+    return next(new ErrorHandler("Avatar & Resume Required!", 400));
   }
-  const { avatar, resume } = req.files;
+  const { avatar } = req.files;
+  console.log("AVATAR", avatar);
 
   //POSTING AVATAR
   const cloudinaryResponseForAvatar = await cloudinary.uploader.upload(
@@ -26,6 +27,8 @@ export const register = catchAsyncErrors(async (req, res, next) => {
   }
 
   //POSTING RESUME
+  const { resume } = req.files;
+  console.log("RESUME", resume);
   const cloudinaryResponseForResume = await cloudinary.uploader.upload(
     resume.tempFilePath,
     { folder: "PORTFOLIO RESUME" }
@@ -63,15 +66,15 @@ export const register = catchAsyncErrors(async (req, res, next) => {
     facebookURL,
     linkedInURL,
     avatar: {
-      public_id: cloudinaryResponse.public_id, // Set your cloudinary public_id here
-      url: cloudinaryResponse.secure_url, // Set your cloudinary secure_url here
+      public_id: cloudinaryResponseForAvatar.public_id,
+      url: cloudinaryResponseForAvatar.secure_url,
     },
     resume: {
-      public_id: cloudinaryResponse.public_id, // Set your cloudinary public_id here
-      url: cloudinaryResponse.secure_url, // Set your cloudinary secure_url here
+      public_id: cloudinaryResponseForResume.public_id,
+      url: cloudinaryResponseForResume.secure_url,
     },
   });
-  generateToken(user, "Registered!", 201, res);
+  generateToken(user, "Registered Successfully!", 201, res);
 });
 
 export const login = catchAsyncErrors(async (req, res, next) => {
@@ -81,11 +84,11 @@ export const login = catchAsyncErrors(async (req, res, next) => {
   }
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
-    return next(new ErrorHandler("Invalid Email Or Password!", 404));
+    return next(new ErrorHandler("Invalid Email!", 404));
   }
   const isPasswordMatched = await user.comparePassword(password);
   if (!isPasswordMatched) {
-    return next(new ErrorHandler("Invalid Email Or Password", 401));
+    return next(new ErrorHandler("Invalid Password", 401));
   }
   generateToken(user, "Login Successfully!", 200, res);
 });
@@ -193,7 +196,7 @@ export const updatePassword = catchAsyncErrors(async (req, res, next) => {
 });
 
 export const getUserForPortfolio = catchAsyncErrors(async (req, res, next) => {
-  const id = "663296a896e553748ab5b0be";
+  const id = "682992a927add9a94274fa7d"; //user1._id
   const user = await User.findById(id);
   res.status(200).json({
     success: true,

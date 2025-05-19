@@ -10,7 +10,7 @@ export const addNewSkill = catchAsyncErrors(async (req, res, next) => {
   const { svg } = req.files;
   const { title, proficiency } = req.body;
   if (!title || !proficiency) {
-    return next(new ErrorHandler("Please Fill Full Form!", 400));
+    return next(new ErrorHandler("Please Provide All Details!", 400));
   }
   const cloudinaryResponse = await cloudinary.uploader.upload(
     svg.tempFilePath,

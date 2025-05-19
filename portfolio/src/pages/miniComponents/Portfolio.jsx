@@ -4,13 +4,15 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const Portfolio = () => {
   const [viewAll, setViewAll] = useState(false);
   const [projects, setProjects] = useState([]);
   useEffect(() => {
     const getMyProjects = async () => {
       const { data } = await axios.get(
-        "https://mern-stack-portfolio-backend-code.onrender.com/api/v1/project/getall",
+        `${BACKEND_URL}/api/v1/project/getall`,
         { withCredentials: true }
       );
       setProjects(data.projects);
@@ -52,9 +54,13 @@ const Portfolio = () => {
               return (
                 <Link to={`/project/${element._id}`} key={element._id}>
                   <img
+                  
                     src={element.projectBanner && element.projectBanner.url}
                     alt={element.title}
                   />
+                  <p className="text-muted-foreground text-center">
+                    {element.title}
+                  </p>
                 </Link>
               );
             })
@@ -63,9 +69,13 @@ const Portfolio = () => {
               return (
                 <Link to={`/project/${element._id}`} key={element._id}>
                   <img
+                  
                     src={element.projectBanner && element.projectBanner.url}
                     alt={element.title}
                   />
+                  <p className="text-muted-foreground text-center">
+                    {element.title}
+                  </p>
                 </Link>
               );
             })}
@@ -78,6 +88,7 @@ const Portfolio = () => {
         </div>
       )}
     </div>
+      
   );
 };
 

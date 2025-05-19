@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -45,27 +45,36 @@ const UpdateProject = () => {
       setProjectBanner(file);
     };
   };
-
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   useEffect(() => {
     const getProject = async () => {
       await axios
-        .get(`https://mern-stack-portfolio-backend-code.onrender.com/api/v1/project/get/${id}`, {
+        .get(`${BACKEND_URL}/api/v1/project/get/${id}`, {
           withCredentials: true,
         })
         .then((res) => {
           setTitle(res.data.project.title);
+          console.log("Title set to:", res.data.project.title);
           setDescription(res.data.project.description);
+          console.log("Description set to:", res.data.project.description);
           setStack(res.data.project.stack);
+          console.log("Stack set to:", res.data.project.stack);
           setDeployed(res.data.project.deployed);
+          console.log("Deployed set to:", res.data.project.deployed);
           setTechnologies(res.data.project.technologies);
+          console.log("Technologies set to:", res.data.project.technologies);
           setGitRepoLink(res.data.project.gitRepoLink);
+          console.log("GitRepoLink set to:", res.data.project.gitRepoLink);
           setProjectLink(res.data.project.projectLink);
+          console.log("ProjectLink set to:", res.data.project.projectLink);
           setProjectBanner(
             res.data.project.projectBanner && res.data.project.projectBanner.url
           );
+          console.log("ProjectBanner set to:", res.data.project.projectBanner && res.data.project.projectBanner.url);
           setProjectBannerPreview(
             res.data.project.projectBanner && res.data.project.projectBanner.url
           );
+          console.log("ProjectBannerPreview set to:", res.data.project.projectBanner && res.data.project.projectBanner.url);
         })
         .catch((error) => {
           toast.error(error.response.data.message);

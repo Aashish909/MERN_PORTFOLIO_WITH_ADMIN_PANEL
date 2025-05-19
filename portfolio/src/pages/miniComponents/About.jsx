@@ -27,16 +27,20 @@ const About = () => {
             <img
               src="/me.jpg"
               alt="avatar"
-              className="bg-white p-2 sm:p-4 rotate-[25deg] h-[240px] sm:h-[340px] md:h-[350px] lg:h-[450px]"
+              className="bg-white p-2 sm:p-4 rotate-[10deg] h-[240px] sm:h-[340px] md:h-[350px] lg:h-[450px] rounded-md"
             />
           </div>
           <div className="flex justify-center flex-col tracking-[1px] text-xl gap-5">
             <p>
-              My name is Zeeshan, but my followers call me Zeeshu. I will
-              graduate in Software Engineering from SMIU around 2024. I work as
-              a web developer and freelancer. My hobbies include watching
-              movies, series, playing video games, and occasionally cooking.
+              Hi! I'm Aashish Kumar — a passionate Full Stack Developer
+              specializing in the MERN stack. I’ve worked on diverse real-world
+              projects ranging from e-commerce platforms to AI-powered SaaS
+              applications. I'm currently expanding my skills in React Native
+              and building intuitive, high-performance apps. Outside of coding,
+              I enjoy exploring new tech, learning through hands-on building,
+              and occasionally diving into creative side projects.
             </p>
+
             <p>
               I have interests not only in technology but also in movies,
               series, video games, and cooking. I excel in meeting deadlines for

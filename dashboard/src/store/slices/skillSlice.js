@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const skillSlice = createSlice({
   name: "skill",
   initialState: {
@@ -10,10 +12,9 @@ const skillSlice = createSlice({
     message: null,
   },
   reducers: {
-    getAllSkillsRequest(state, action) {
-      state.skills = [];
-      state.error = null;
+    getAllSkillsRequest(state) {
       state.loading = true;
+      state.error = null;
     },
     getAllSkillsSuccess(state, action) {
       state.skills = action.payload;
@@ -21,11 +22,10 @@ const skillSlice = createSlice({
       state.loading = false;
     },
     getAllSkillsFailed(state, action) {
-      state.skills = state.skills;
       state.error = action.payload;
       state.loading = false;
     },
-    addNewSkillRequest(state, action) {
+    addNewSkillRequest(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
@@ -40,7 +40,7 @@ const skillSlice = createSlice({
       state.loading = false;
       state.message = null;
     },
-    deleteSkillRequest(state, action) {
+    deleteSkillRequest(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
@@ -55,7 +55,7 @@ const skillSlice = createSlice({
       state.loading = false;
       state.message = null;
     },
-    updateSkillRequest(state, action) {
+    updateSkillRequest(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
@@ -70,15 +70,13 @@ const skillSlice = createSlice({
       state.loading = false;
       state.message = null;
     },
-    resetSkillSlice(state, action) {
+    resetSkillSlice(state) {
       state.error = null;
-      state.skills = state.skills;
       state.message = null;
       state.loading = false;
     },
-    clearAllErrors(state, action) {
+    clearAllErrors(state) {
       state.error = null;
-      state.skills = state.skills;
     },
   },
 });
@@ -86,10 +84,9 @@ const skillSlice = createSlice({
 export const getAllSkills = () => async (dispatch) => {
   dispatch(skillSlice.actions.getAllSkillsRequest());
   try {
-    const response = await axios.get(
-      "https://mern-stack-portfolio-backend-code.onrender.com/api/v1/skill/getall",
-      { withCredentials: true }
-    );
+    const response = await axios.get(`${BACKEND_URL}/api/v1/skill/getall`, {
+      withCredentials: true,
+    });
     dispatch(skillSlice.actions.getAllSkillsSuccess(response.data.skills));
     dispatch(skillSlice.actions.clearAllErrors());
   } catch (error) {
@@ -102,16 +99,10 @@ export const getAllSkills = () => async (dispatch) => {
 export const addNewSkill = (data) => async (dispatch) => {
   dispatch(skillSlice.actions.addNewSkillRequest());
   try {
-    const response = await axios.post(
-      "https://mern-stack-portfolio-backend-code.onrender.com/api/v1/skill/add",
-      data,
-      {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
-      }
-    );
-    console.log(response);
-    console.log(response.data.message);
+    const response = await axios.post(`${BACKEND_URL}/api/v1/skill/add`, data, {
+      withCredentials: true,
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     dispatch(skillSlice.actions.addNewSkillSuccess(response.data.message));
     dispatch(skillSlice.actions.clearAllErrors());
   } catch (error) {
@@ -123,7 +114,7 @@ export const updateSkill = (id, proficiency) => async (dispatch) => {
   dispatch(skillSlice.actions.updateSkillRequest());
   try {
     const response = await axios.put(
-      `https://mern-stack-portfolio-backend-code.onrender.com/api/v1/skill/update/${id}`,
+      `${BACKEND_URL}/api/v1/skill/update/${id}`,
       { proficiency },
       {
         withCredentials: true,
@@ -141,7 +132,7 @@ export const deleteSkill = (id) => async (dispatch) => {
   dispatch(skillSlice.actions.deleteSkillRequest());
   try {
     const response = await axios.delete(
-      `https://mern-stack-portfolio-backend-code.onrender.com/api/v1/skill/delete/${id}`,
+      `${BACKEND_URL}/api/v1/skill/delete/${id}`,
       {
         withCredentials: true,
       }

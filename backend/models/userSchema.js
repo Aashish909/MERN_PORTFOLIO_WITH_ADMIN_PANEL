@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Password Required!"],
-    minLength: [8, "Password Must Contain At Least 8 Characters!"],
+    minLength: [5, "Password Must Contain At Least 5 Characters!"],
     select: false
   },
   avatar: {
@@ -69,6 +69,7 @@ const userSchema = new mongoose.Schema({
   resetPasswordExpire: Date,
 });
 
+//FOR HASHING PASSWORD
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
@@ -76,10 +77,12 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
+//FOR COMPARE PASSWORD WITH HASHED PASSWORD
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+//Generating Json Web Token
 userSchema.methods.generateJsonWebToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
     expiresIn: process.env.JWT_EXPIRES,

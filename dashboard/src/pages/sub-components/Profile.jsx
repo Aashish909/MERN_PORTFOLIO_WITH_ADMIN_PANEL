@@ -1,9 +1,8 @@
-import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSelector } from "react-redux";
 import { Textarea } from "@/components/ui/textarea";
-import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const Profile = () => {
   const { user } = useSelector((state) => state.user);
@@ -30,13 +29,9 @@ const Profile = () => {
                 </div>
                 <div className="grid gap-2 w-full sm:w-72">
                   <Label>Resume</Label>
-                  <Link to={user && user.resume && user.resume.url} target="_blank">
-                    <img
-                      src={user && user.resume && user.resume.url}
-                      alt="avatar"
-                      className="w-full  h-auto sm:w-72 sm:h-72 rounded-2xl"
-                    />
-                  </Link>
+                  <a href="/CV.pdf" download className="w-full">
+                    <Button className="w-full">Download Resume</Button>
+                  </a>
                 </div>
               </div>
               <div className="grid gap-2">
@@ -61,11 +56,15 @@ const Profile = () => {
               </div>
               <div className="grid gap-2">
                 <Label>Github URL</Label>
-                <Input type="text" defaultValue={user.githubURL} disabled />
+                <a href="https://github.com/Aashish909" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  Go to Github Profile
+                </a>
               </div>
               <div className="grid gap-2">
                 <Label>LinkedIn URL</Label>
-                <Input type="text" defaultValue={user.linkedInURL} disabled />
+                <a href="https://www.linkedin.com/in/aashish909/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  Go to LinkedIn Profile
+                </a>
               </div>
               <div className="grid gap-2">
                 <Label>Instagram URL</Label>

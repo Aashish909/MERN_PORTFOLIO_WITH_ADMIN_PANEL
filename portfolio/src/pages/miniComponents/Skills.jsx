@@ -2,12 +2,14 @@ import { Card } from "@/components/ui/card";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const Skills = () => {
   const [skills, setSkills] = useState([]);
   useEffect(() => {
     const getMySkills = async () => {
       const { data } = await axios.get(
-        "https://mern-stack-portfolio-backend-code.onrender.com/api/v1/skill/getall",
+        `${BACKEND_URL}/api/v1/skill/getall`,
         { withCredentials: true }
       );
       setSkills(data.skills);

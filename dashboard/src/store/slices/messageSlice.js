@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const messageSlice = createSlice({
   name: "messages",
   initialState: {
@@ -10,7 +12,7 @@ const messageSlice = createSlice({
     message: null,
   },
   reducers: {
-    getAllMessagesRequest(state, action) {
+    getAllMessagesRequest(state) {
       state.messages = [];
       state.error = null;
       state.loading = true;
@@ -21,11 +23,10 @@ const messageSlice = createSlice({
       state.loading = false;
     },
     getAllMessagesFailed(state, action) {
-      state.messages = state.messages;
       state.error = action.payload;
       state.loading = false;
     },
-    deleteMessageRequest(state, action) {
+    deleteMessageRequest(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
@@ -40,15 +41,13 @@ const messageSlice = createSlice({
       state.loading = false;
       state.message = null;
     },
-    resetMessageSlice(state, action) {
+    resetMessageSlice(state) {
       state.error = null;
-      state.messages = state.messages;
       state.message = null;
       state.loading = false;
     },
-    clearAllErrors(state, action) {
+    clearAllErrors(state) {
       state.error = null;
-      state.messages = state.messages;
     },
   },
 });
@@ -56,10 +55,9 @@ const messageSlice = createSlice({
 export const getAllMessages = () => async (dispatch) => {
   dispatch(messageSlice.actions.getAllMessagesRequest());
   try {
-    const response = await axios.get(
-      "https://mern-stack-portfolio-backend-code.onrender.com/api/v1/message/getall",
-      { withCredentials: true }
-    );
+    const response = await axios.get(`${BACKEND_URL}/api/v1/message/getall`, {
+      withCredentials: true,
+    });
     dispatch(
       messageSlice.actions.getAllMessagesSuccess(response.data.messages)
     );
@@ -75,7 +73,7 @@ export const deleteMessage = (id) => async (dispatch) => {
   dispatch(messageSlice.actions.deleteMessageRequest());
   try {
     const response = await axios.delete(
-      `https://mern-stack-portfolio-backend-code.onrender.com/api/v1/message/delete/${id}`,
+      `${BACKEND_URL}/api/v1/message/delete/${id}`,
       {
         withCredentials: true,
       }

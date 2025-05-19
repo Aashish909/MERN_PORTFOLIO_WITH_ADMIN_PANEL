@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const projectSlice = createSlice({
   name: "project",
   initialState: {
@@ -11,7 +13,7 @@ const projectSlice = createSlice({
     singleProject: {},
   },
   reducers: {
-    getAllProjectsRequest(state, action) {
+    getAllProjectsRequest(state) {
       state.projects = [];
       state.error = null;
       state.loading = true;
@@ -26,7 +28,7 @@ const projectSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     },
-    addNewProjectRequest(state, action) {
+    addNewProjectRequest(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
@@ -41,7 +43,7 @@ const projectSlice = createSlice({
       state.loading = false;
       state.message = null;
     },
-    deleteProjectRequest(state, action) {
+    deleteProjectRequest(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
@@ -56,7 +58,7 @@ const projectSlice = createSlice({
       state.loading = false;
       state.message = null;
     },
-    updateProjectRequest(state, action) {
+    updateProjectRequest(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
@@ -71,26 +73,27 @@ const projectSlice = createSlice({
       state.loading = false;
       state.message = null;
     },
-    resetProjectSlice(state, action) {
+    resetProjectSlice(state) {
       state.error = null;
       state.projects = state.projects;
       state.message = null;
       state.loading = false;
     },
-    clearAllErrors(state, action) {
+    clearAllErrors(state) {
       state.error = null;
       state = state.projects;
     },
   },
 });
 
+// Async actions with dynamic BACKEND_URL
+
 export const getAllProjects = () => async (dispatch) => {
   dispatch(projectSlice.actions.getAllProjectsRequest());
   try {
-    const response = await axios.get(
-      "https://mern-stack-portfolio-backend-code.onrender.com/api/v1/project/getall",
-      { withCredentials: true }
-    );
+    const response = await axios.get(`${BACKEND_URL}/api/v1/project/getall`, {
+      withCredentials: true,
+    });
     dispatch(
       projectSlice.actions.getAllProjectsSuccess(response.data.projects)
     );
@@ -106,7 +109,7 @@ export const addNewProject = (data) => async (dispatch) => {
   dispatch(projectSlice.actions.addNewProjectRequest());
   try {
     const response = await axios.post(
-      "https://mern-stack-portfolio-backend-code.onrender.com/api/v1/project/add",
+      `${BACKEND_URL}/api/v1/project/add`,
       data,
       {
         withCredentials: true,
@@ -121,11 +124,12 @@ export const addNewProject = (data) => async (dispatch) => {
     );
   }
 };
+
 export const deleteProject = (id) => async (dispatch) => {
   dispatch(projectSlice.actions.deleteProjectRequest());
   try {
     const response = await axios.delete(
-      `https://mern-stack-portfolio-backend-code.onrender.com/api/v1/project/delete/${id}`,
+      `${BACKEND_URL}/api/v1/project/delete/${id}`,
       {
         withCredentials: true,
       }
@@ -138,11 +142,12 @@ export const deleteProject = (id) => async (dispatch) => {
     );
   }
 };
+
 export const updateProject = (id, newData) => async (dispatch) => {
   dispatch(projectSlice.actions.updateProjectRequest());
   try {
     const response = await axios.put(
-      `https://mern-stack-portfolio-backend-code.onrender.com/api/v1/project/update/${id}`,
+      `${BACKEND_URL}/api/v1/project/update/${id}`,
       newData,
       {
         withCredentials: true,
@@ -159,6 +164,7 @@ export const updateProject = (id, newData) => async (dispatch) => {
   }
 };
 
+// Utility actions
 export const resetProjectSlice = () => (dispatch) => {
   dispatch(projectSlice.actions.resetProjectSlice());
 };
