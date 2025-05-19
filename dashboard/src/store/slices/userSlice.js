@@ -117,7 +117,13 @@ export const login = (email, password) => async (dispatch) => {
     const { data } = await axios.post(
       `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/user/login`,
       { email, password },
-      { withCredentials: true, headers: { "Content-Type": "application/json" } }
+      { 
+        withCredentials: true, 
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Credentials': true
+        } 
+      }
     );
     dispatch(userSlice.actions.loginSuccess(data.user));
     dispatch(userSlice.actions.clearAllErrors());
@@ -131,6 +137,10 @@ export const getUser = () => async (dispatch) => {
   try {
     const { data } = await axios.get(`https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/user/me`, {
       withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Credentials': true
+      }
     });
     dispatch(userSlice.actions.loadUserSuccess(data.user));
     dispatch(userSlice.actions.clearAllErrors());
@@ -143,6 +153,10 @@ export const logout = () => async (dispatch) => {
   try {
     const { data } = await axios.get(`https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/user/logout`, {
       withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Credentials': true
+      }
     });
     dispatch(userSlice.actions.logoutSuccess(data.message));
     dispatch(userSlice.actions.clearAllErrors());
@@ -160,7 +174,10 @@ export const updatePassword =
         { currentPassword, newPassword, confirmNewPassword },
         {
           withCredentials: true,
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Credentials': true
+          }
         }
       );
       dispatch(userSlice.actions.updatePasswordSuccess(data.message));
@@ -180,7 +197,10 @@ export const updateProfile = (data) => async (dispatch) => {
       data,
       {
         withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          'Access-Control-Allow-Credentials': true
+        }
       }
     );
     dispatch(userSlice.actions.updateProfileSuccess(response.data.message));

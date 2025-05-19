@@ -93,6 +93,10 @@ export const getAllProjects = () => async (dispatch) => {
   try {
     const response = await axios.get(`https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/project/getall`, {
       withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Credentials': true
+      }
     });
     dispatch(
       projectSlice.actions.getAllProjectsSuccess(response.data.projects)
@@ -113,7 +117,10 @@ export const addNewProject = (data) => async (dispatch) => {
       data,
       {
         withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          'Access-Control-Allow-Credentials': true
+        }
       }
     );
     dispatch(projectSlice.actions.addNewProjectSuccess(response.data.message));
@@ -132,6 +139,10 @@ export const deleteProject = (id) => async (dispatch) => {
       `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/project/delete/${id}`,
       {
         withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Credentials': true
+        }
       }
     );
     dispatch(projectSlice.actions.deleteProjectSuccess(response.data.message));
@@ -151,7 +162,10 @@ export const updateProject = (id, newData) => async (dispatch) => {
       newData,
       {
         withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          'Access-Control-Allow-Credentials': true
+        }
       }
     );
     dispatch(projectSlice.actions.updateProjectSuccess(response.data.message));

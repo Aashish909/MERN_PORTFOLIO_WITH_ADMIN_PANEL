@@ -74,7 +74,13 @@ export const getAllSoftwareApplications = () => async (dispatch) => {
   try {
     const response = await axios.get(
       `${BACKEND_URL}/api/v1/softwareapplication/getall`,
-      { withCredentials: true }
+      { 
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Credentials': true
+        }
+      }
     );
     dispatch(
       softwareApplicationSlice.actions.getAllsoftwareApplicationsSuccess(
@@ -101,7 +107,10 @@ export const addNewSoftwareApplication = (data) => async (dispatch) => {
       data,
       {
         withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          'Access-Control-Allow-Credentials': true
+        }
       }
     );
     dispatch(
@@ -128,6 +137,10 @@ export const deleteSoftwareApplication = (id) => async (dispatch) => {
       `${BACKEND_URL}/api/v1/softwareapplication/delete/${id}`,
       {
         withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Credentials': true
+        }
       }
     );
     dispatch(

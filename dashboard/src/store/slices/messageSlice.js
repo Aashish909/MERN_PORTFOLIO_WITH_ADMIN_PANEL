@@ -57,6 +57,10 @@ export const getAllMessages = () => async (dispatch) => {
   try {
     const response = await axios.get(`https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/message/getall`, {
       withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Credentials': true
+      }
     });
     dispatch(
       messageSlice.actions.getAllMessagesSuccess(response.data.messages)
@@ -76,6 +80,10 @@ export const deleteMessage = (id) => async (dispatch) => {
       `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/message/delete/${id}`,
       {
         withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Credentials': true
+        }
       }
     );
     dispatch(messageSlice.actions.deleteMessageSuccess(response.data.message));

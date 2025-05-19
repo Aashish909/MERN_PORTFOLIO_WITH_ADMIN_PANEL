@@ -74,6 +74,10 @@ export const getAllTimeline = () => async (dispatch) => {
   try {
     const response = await axios.get(`https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/timeline/getall`, {
       withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Credentials': true
+      }
     });
     dispatch(
       timelineSlice.actions.getAllTimelineSuccess(response.data.timelines)
@@ -94,7 +98,10 @@ export const addNewTimeline = (data) => async (dispatch) => {
       data,
       {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Credentials': true
+        }
       }
     );
     dispatch(
@@ -113,7 +120,13 @@ export const deleteTimeline = (id) => async (dispatch) => {
   try {
     const response = await axios.delete(
       `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/timeline/delete/${id}`,
-      { withCredentials: true }
+      { 
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Credentials': true
+        }
+      }
     );
     dispatch(
       timelineSlice.actions.deleteTimelineSuccess(response.data.message)

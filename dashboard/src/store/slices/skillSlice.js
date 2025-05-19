@@ -86,6 +86,10 @@ export const getAllSkills = () => async (dispatch) => {
   try {
     const response = await axios.get(`${BACKEND_URL}/api/v1/skill/getall`, {
       withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Credentials': true
+      }
     });
     dispatch(skillSlice.actions.getAllSkillsSuccess(response.data.skills));
     dispatch(skillSlice.actions.clearAllErrors());
@@ -101,7 +105,10 @@ export const addNewSkill = (data) => async (dispatch) => {
   try {
     const response = await axios.post(`${BACKEND_URL}/api/v1/skill/add`, data, {
       withCredentials: true,
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: { 
+        'Content-Type': 'multipart/form-data',
+        'Access-Control-Allow-Credentials': true
+      }
     });
     dispatch(skillSlice.actions.addNewSkillSuccess(response.data.message));
     dispatch(skillSlice.actions.clearAllErrors());
@@ -118,7 +125,10 @@ export const updateSkill = (id, proficiency) => async (dispatch) => {
       { proficiency },
       {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Credentials': true
+        }
       }
     );
     dispatch(skillSlice.actions.updateSkillSuccess(response.data.message));
@@ -135,6 +145,10 @@ export const deleteSkill = (id) => async (dispatch) => {
       `${BACKEND_URL}/api/v1/skill/delete/${id}`,
       {
         withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Credentials': true
+        }
       }
     );
     dispatch(skillSlice.actions.deleteSkillSuccess(response.data.message));
