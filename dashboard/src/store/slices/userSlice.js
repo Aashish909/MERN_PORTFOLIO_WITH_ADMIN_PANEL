@@ -1,7 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+import axiosInstance from "@/utils/axios";
 
 const userSlice = createSlice({
   name: "user",
@@ -114,54 +112,49 @@ const userSlice = createSlice({
 export const login = (email, password) => async (dispatch) => {
   dispatch(userSlice.actions.loginRequest());
   try {
-    const { data } = await axios.post(
-      `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/user/login`,
-      { email, password },
-      { 
-        withCredentials: true, 
-        headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Credentials': true
-        } 
-      }
-    );
-    dispatch(userSlice.actions.loginSuccess(data.user));
+    const { data } = await axiosInstance.post('/api/v1/user/login', { email, password });
+    
+    // Immediately get user data after successful login
+    const userData = await axiosInstance.get('/api/v1/user/me');
+    
+    dispatch(userSlice.actions.loginSuccess(userData.data.user));
     dispatch(userSlice.actions.clearAllErrors());
+    localStorage.setItem('isAuthenticated', 'true');
   } catch (error) {
-    dispatch(userSlice.actions.loginFailed(error.response.data.message));
+    console.error('Login error:', error);
+    dispatch(userSlice.actions.loginFailed(error.response?.data?.message || 'Login failed'));
+    localStorage.removeItem('isAuthenticated');
   }
 };
 
 export const getUser = () => async (dispatch) => {
+  const isAuthenticated = localStorage.getItem('isAuthenticated');
+  if (!isAuthenticated) {
+    dispatch(userSlice.actions.loadUserFailed('Not authenticated'));
+    return;
+  }
+
   dispatch(userSlice.actions.loadUserRequest());
   try {
-    const { data } = await axios.get(`https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/user/me`, {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Credentials': true
-      }
-    });
+    const { data } = await axiosInstance.get('/api/v1/user/me');
     dispatch(userSlice.actions.loadUserSuccess(data.user));
     dispatch(userSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(userSlice.actions.loadUserFailed(error.response.data.message));
+    console.error('Get user error:', error);
+    dispatch(userSlice.actions.loadUserFailed(error.response?.data?.message || 'Failed to get user'));
+    localStorage.removeItem('isAuthenticated');
   }
 };
 
 export const logout = () => async (dispatch) => {
   try {
-    const { data } = await axios.get(`https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/user/logout`, {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Credentials': true
-      }
-    });
+    const { data } = await axiosInstance.get('/api/v1/user/logout');
     dispatch(userSlice.actions.logoutSuccess(data.message));
     dispatch(userSlice.actions.clearAllErrors());
+    localStorage.removeItem('isAuthenticated');
   } catch (error) {
-    dispatch(userSlice.actions.logoutFailed(error.response.data.message));
+    console.error('Logout error:', error);
+    dispatch(userSlice.actions.logoutFailed(error.response?.data?.message || 'Logout failed'));
   }
 };
 
@@ -169,17 +162,7 @@ export const updatePassword =
   (currentPassword, newPassword, confirmNewPassword) => async (dispatch) => {
     dispatch(userSlice.actions.updatePasswordRequest());
     try {
-      const { data } = await axios.put(
-        `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/user/password/update`,
-        { currentPassword, newPassword, confirmNewPassword },
-        {
-          withCredentials: true,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Credentials': true
-          }
-        }
-      );
+      const { data } = await axiosInstance.put('/api/v1/user/password/update', { currentPassword, newPassword, confirmNewPassword });
       dispatch(userSlice.actions.updatePasswordSuccess(data.message));
       dispatch(userSlice.actions.clearAllErrors());
     } catch (error) {
@@ -192,17 +175,7 @@ export const updatePassword =
 export const updateProfile = (data) => async (dispatch) => {
   dispatch(userSlice.actions.updateProfileRequest());
   try {
-    const response = await axios.put(
-      `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/user/me/profile/update`,
-      data,
-      {
-        withCredentials: true,
-        headers: { 
-          'Content-Type': 'multipart/form-data',
-          'Access-Control-Allow-Credentials': true
-        }
-      }
-    );
+    const response = await axiosInstance.put('/api/v1/user/me/profile/update', data);
     dispatch(userSlice.actions.updateProfileSuccess(response.data.message));
     dispatch(userSlice.actions.clearAllErrors());
   } catch (error) {

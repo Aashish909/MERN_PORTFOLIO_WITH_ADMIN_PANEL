@@ -1,7 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+import axiosInstance from "@/utils/axios";
 
 const projectSlice = createSlice({
   name: "project",
@@ -24,7 +22,6 @@ const projectSlice = createSlice({
       state.loading = false;
     },
     getAllProjectsFailed(state, action) {
-      state.projects = state.projects;
       state.error = action.payload;
       state.loading = false;
     },
@@ -75,110 +72,67 @@ const projectSlice = createSlice({
     },
     resetProjectSlice(state) {
       state.error = null;
-      state.projects = state.projects;
       state.message = null;
       state.loading = false;
     },
     clearAllErrors(state) {
       state.error = null;
-      state = state.projects;
     },
   },
 });
 
-// Async actions with dynamic BACKEND_URL
-
 export const getAllProjects = () => async (dispatch) => {
   dispatch(projectSlice.actions.getAllProjectsRequest());
   try {
-    const response = await axios.get(`https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/project/getall`, {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Credentials': true
-      }
-    });
-    dispatch(
-      projectSlice.actions.getAllProjectsSuccess(response.data.projects)
-    );
+    const response = await axiosInstance.get('/api/v1/project/getall');
+    dispatch(projectSlice.actions.getAllProjectsSuccess(response.data.projects));
     dispatch(projectSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(
-      projectSlice.actions.getAllProjectsFailed(error.response.data.message)
-    );
+    console.error('Get projects error:', error);
+    dispatch(projectSlice.actions.getAllProjectsFailed(error.response?.data?.message || 'Failed to get projects'));
   }
 };
 
 export const addNewProject = (data) => async (dispatch) => {
   dispatch(projectSlice.actions.addNewProjectRequest());
   try {
-    const response = await axios.post(
-      `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/project/add`,
-      data,
-      {
-        withCredentials: true,
-        headers: { 
-          'Content-Type': 'multipart/form-data',
-          'Access-Control-Allow-Credentials': true
-        }
-      }
-    );
+    const response = await axiosInstance.post('/api/v1/project/add', data, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
     dispatch(projectSlice.actions.addNewProjectSuccess(response.data.message));
     dispatch(projectSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(
-      projectSlice.actions.addNewProjectFailed(error.response.data.message)
-    );
+    console.error('Add project error:', error);
+    dispatch(projectSlice.actions.addNewProjectFailed(error.response?.data?.message || 'Failed to add project'));
   }
 };
 
 export const deleteProject = (id) => async (dispatch) => {
   dispatch(projectSlice.actions.deleteProjectRequest());
   try {
-    const response = await axios.delete(
-      `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/project/delete/${id}`,
-      {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Credentials': true
-        }
-      }
-    );
+    const response = await axiosInstance.delete(`/api/v1/project/delete/${id}`);
     dispatch(projectSlice.actions.deleteProjectSuccess(response.data.message));
     dispatch(projectSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(
-      projectSlice.actions.deleteProjectFailed(error.response.data.message)
-    );
+    console.error('Delete project error:', error);
+    dispatch(projectSlice.actions.deleteProjectFailed(error.response?.data?.message || 'Failed to delete project'));
   }
 };
 
 export const updateProject = (id, newData) => async (dispatch) => {
   dispatch(projectSlice.actions.updateProjectRequest());
   try {
-    const response = await axios.put(
-      `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/project/update/${id}`,
-      newData,
-      {
-        withCredentials: true,
-        headers: { 
-          'Content-Type': 'multipart/form-data',
-          'Access-Control-Allow-Credentials': true
-        }
-      }
-    );
+    const response = await axiosInstance.put(`/api/v1/project/update/${id}`, newData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
     dispatch(projectSlice.actions.updateProjectSuccess(response.data.message));
     dispatch(projectSlice.actions.clearAllErrors());
   } catch (error) {
-    console.log(error);
-    dispatch(
-      projectSlice.actions.updateProjectFailed(error.response.data.message)
-    );
+    console.error('Update project error:', error);
+    dispatch(projectSlice.actions.updateProjectFailed(error.response?.data?.message || 'Failed to update project'));
   }
 };
 
-// Utility actions
 export const resetProjectSlice = () => (dispatch) => {
   dispatch(projectSlice.actions.resetProjectSlice());
 };

@@ -1,7 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+import axiosInstance from "@/utils/axios";
 
 const messageSlice = createSlice({
   name: "messages",
@@ -55,43 +53,24 @@ const messageSlice = createSlice({
 export const getAllMessages = () => async (dispatch) => {
   dispatch(messageSlice.actions.getAllMessagesRequest());
   try {
-    const response = await axios.get(`https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/message/getall`, {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Credentials': true
-      }
-    });
-    dispatch(
-      messageSlice.actions.getAllMessagesSuccess(response.data.messages)
-    );
+    const response = await axiosInstance.get('/api/v1/message/getall');
+    dispatch(messageSlice.actions.getAllMessagesSuccess(response.data.messages));
     dispatch(messageSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(
-      messageSlice.actions.getAllMessagesFailed(error.response.data.message)
-    );
+    console.error('Get messages error:', error);
+    dispatch(messageSlice.actions.getAllMessagesFailed(error.response?.data?.message || 'Failed to get messages'));
   }
 };
 
 export const deleteMessage = (id) => async (dispatch) => {
   dispatch(messageSlice.actions.deleteMessageRequest());
   try {
-    const response = await axios.delete(
-      `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/message/delete/${id}`,
-      {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Credentials': true
-        }
-      }
-    );
+    const response = await axiosInstance.delete(`/api/v1/message/delete/${id}`);
     dispatch(messageSlice.actions.deleteMessageSuccess(response.data.message));
     dispatch(messageSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(
-      messageSlice.actions.deleteMessageFailed(error.response.data.message)
-    );
+    console.error('Delete message error:', error);
+    dispatch(messageSlice.actions.deleteMessageFailed(error.response?.data?.message || 'Failed to delete message'));
   }
 };
 

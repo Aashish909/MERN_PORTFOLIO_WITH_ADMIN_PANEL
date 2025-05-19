@@ -1,7 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BACKEND_URL = "https://mern-portfolio-with-admin-panel-backend.onrender.com";
+import axiosInstance from "@/utils/axios";
 
 const skillSlice = createSlice({
   name: "skill",
@@ -13,8 +11,9 @@ const skillSlice = createSlice({
   },
   reducers: {
     getAllSkillsRequest(state) {
-      state.loading = true;
+      state.skills = [];
       state.error = null;
+      state.loading = true;
     },
     getAllSkillsSuccess(state, action) {
       state.skills = action.payload;
@@ -84,86 +83,61 @@ const skillSlice = createSlice({
 export const getAllSkills = () => async (dispatch) => {
   dispatch(skillSlice.actions.getAllSkillsRequest());
   try {
-    const response = await axios.get(`${BACKEND_URL}/api/v1/skill/getall`, {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Credentials': true
-      }
-    });
+    const response = await axiosInstance.get('/api/v1/skill/getall');
     dispatch(skillSlice.actions.getAllSkillsSuccess(response.data.skills));
     dispatch(skillSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(
-      skillSlice.actions.getAllSkillsFailed(error.response.data.message)
-    );
+    console.error('Get skills error:', error);
+    dispatch(skillSlice.actions.getAllSkillsFailed(error.response?.data?.message || 'Failed to get skills'));
   }
 };
 
 export const addNewSkill = (data) => async (dispatch) => {
   dispatch(skillSlice.actions.addNewSkillRequest());
   try {
-    const response = await axios.post(`${BACKEND_URL}/api/v1/skill/add`, data, {
-      withCredentials: true,
-      headers: { 
-        'Content-Type': 'multipart/form-data',
-        'Access-Control-Allow-Credentials': true
-      }
+    const response = await axiosInstance.post('/api/v1/skill/add', data, {
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     dispatch(skillSlice.actions.addNewSkillSuccess(response.data.message));
     dispatch(skillSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(skillSlice.actions.addNewSkillFailed(error.response.data.message));
-  }
-};
-
-export const updateSkill = (id, proficiency) => async (dispatch) => {
-  dispatch(skillSlice.actions.updateSkillRequest());
-  try {
-    const response = await axios.put(
-      `${BACKEND_URL}/api/v1/skill/update/${id}`,
-      { proficiency },
-      {
-        withCredentials: true,
-        headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Credentials': true
-        }
-      }
-    );
-    dispatch(skillSlice.actions.updateSkillSuccess(response.data.message));
-    dispatch(skillSlice.actions.clearAllErrors());
-  } catch (error) {
-    dispatch(skillSlice.actions.updateSkillFailed(error.response.data.message));
+    console.error('Add skill error:', error);
+    dispatch(skillSlice.actions.addNewSkillFailed(error.response?.data?.message || 'Failed to add skill'));
   }
 };
 
 export const deleteSkill = (id) => async (dispatch) => {
   dispatch(skillSlice.actions.deleteSkillRequest());
   try {
-    const response = await axios.delete(
-      `${BACKEND_URL}/api/v1/skill/delete/${id}`,
-      {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Credentials': true
-        }
-      }
-    );
+    const response = await axiosInstance.delete(`/api/v1/skill/delete/${id}`);
     dispatch(skillSlice.actions.deleteSkillSuccess(response.data.message));
     dispatch(skillSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(skillSlice.actions.deleteSkillFailed(error.response.data.message));
+    console.error('Delete skill error:', error);
+    dispatch(skillSlice.actions.deleteSkillFailed(error.response?.data?.message || 'Failed to delete skill'));
   }
 };
 
-export const clearAllSkillErrors = () => (dispatch) => {
-  dispatch(skillSlice.actions.clearAllErrors());
+export const updateSkill = (id, newData) => async (dispatch) => {
+  dispatch(skillSlice.actions.updateSkillRequest());
+  try {
+    const response = await axiosInstance.put(`/api/v1/skill/update/${id}`, newData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    dispatch(skillSlice.actions.updateSkillSuccess(response.data.message));
+    dispatch(skillSlice.actions.clearAllErrors());
+  } catch (error) {
+    console.error('Update skill error:', error);
+    dispatch(skillSlice.actions.updateSkillFailed(error.response?.data?.message || 'Failed to update skill'));
+  }
 };
 
 export const resetSkillSlice = () => (dispatch) => {
   dispatch(skillSlice.actions.resetSkillSlice());
+};
+
+export const clearAllSkillErrors = () => (dispatch) => {
+  dispatch(skillSlice.actions.clearAllErrors());
 };
 
 export default skillSlice.reducer;
