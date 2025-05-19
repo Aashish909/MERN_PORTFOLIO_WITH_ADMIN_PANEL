@@ -91,7 +91,7 @@ const projectSlice = createSlice({
 export const getAllProjects = () => async (dispatch) => {
   dispatch(projectSlice.actions.getAllProjectsRequest());
   try {
-    const response = await axios.get(`${BACKEND_URL}/api/v1/project/getall`, {
+    const response = await axios.get(`https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/project/getall`, {
       withCredentials: true,
     });
     dispatch(
@@ -109,7 +109,7 @@ export const addNewProject = (data) => async (dispatch) => {
   dispatch(projectSlice.actions.addNewProjectRequest());
   try {
     const response = await axios.post(
-      `${BACKEND_URL}/api/v1/project/add`,
+      `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/project/add`,
       data,
       {
         withCredentials: true,
@@ -129,7 +129,7 @@ export const deleteProject = (id) => async (dispatch) => {
   dispatch(projectSlice.actions.deleteProjectRequest());
   try {
     const response = await axios.delete(
-      `${BACKEND_URL}/api/v1/project/delete/${id}`,
+      `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/project/delete/${id}`,
       {
         withCredentials: true,
       }
@@ -147,7 +147,7 @@ export const updateProject = (id, newData) => async (dispatch) => {
   dispatch(projectSlice.actions.updateProjectRequest());
   try {
     const response = await axios.put(
-      `${BACKEND_URL}/api/v1/project/update/${id}`,
+      `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/project/update/${id}`,
       newData,
       {
         withCredentials: true,

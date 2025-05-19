@@ -55,7 +55,7 @@ const messageSlice = createSlice({
 export const getAllMessages = () => async (dispatch) => {
   dispatch(messageSlice.actions.getAllMessagesRequest());
   try {
-    const response = await axios.get(`${BACKEND_URL}/api/v1/message/getall`, {
+    const response = await axios.get(`https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/message/getall`, {
       withCredentials: true,
     });
     dispatch(
@@ -73,7 +73,7 @@ export const deleteMessage = (id) => async (dispatch) => {
   dispatch(messageSlice.actions.deleteMessageRequest());
   try {
     const response = await axios.delete(
-      `${BACKEND_URL}/api/v1/message/delete/${id}`,
+      `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/message/delete/${id}`,
       {
         withCredentials: true,
       }

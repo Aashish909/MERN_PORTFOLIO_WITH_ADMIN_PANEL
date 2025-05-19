@@ -16,7 +16,7 @@ const ProjectView = () => {
   const [projectBannerPreview, setProjectBannerPreview] = useState("");
   const { id } = useParams();
 
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  const BACKEND_URL = "https://mern-portfolio-with-admin-panel-backend.onrender.com";
 
   useEffect(() => {
     const getProject = async () => {

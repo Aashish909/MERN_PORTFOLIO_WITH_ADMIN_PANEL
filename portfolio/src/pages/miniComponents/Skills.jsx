@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const BACKEND_URL = "https://mern-portfolio-with-admin-panel-backend.onrender.com";
 
 const Skills = () => {
   const [skills, setSkills] = useState([]);

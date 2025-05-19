@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const BACKEND_URL = "https://mern-portfolio-with-admin-panel-backend.onrender.com";
 
 const softwareApplicationSlice = createSlice({
   name: "softwareApplications",

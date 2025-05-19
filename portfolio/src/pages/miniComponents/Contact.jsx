@@ -5,7 +5,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const BACKEND_URL = "https://mern-portfolio-with-admin-panel-backend.onrender.com";
 
 const Contact = () => {
   const [senderName, setSenderName] = useState("");

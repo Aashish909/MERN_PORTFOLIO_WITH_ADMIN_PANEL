@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import CV from "../../assets/CV.pdf";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const BACKEND_URL = "https://mern-portfolio-with-admin-panel-backend.onrender.com";
 
 const Hero = () => {
   const [user, setUser] = useState({});
