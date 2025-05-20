@@ -12,7 +12,8 @@ const axiosInstance = axios.create({
 // Add a request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    // You can add any additional headers or logic here
+    // Ensure credentials are included in every request
+    config.withCredentials = true;
     return config;
   },
   (error) => {
@@ -26,12 +27,22 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
-    if (error.response?.status === 401) {
+    const originalRequest = error.config;
+    
+    // Handle 401 errors
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
       // Clear authentication state
       localStorage.removeItem('isAuthenticated');
-      // You might want to redirect to login page here
-      window.location.href = '/login';
+      
+      // If we're not already on the login page, redirect there
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = '/login';
+      }
     }
+    
+    // Always reject the error to be handled by the calling code
     return Promise.reject(error);
   }
 );

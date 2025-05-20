@@ -12,7 +12,7 @@ const userSlice = createSlice({
     isUpdated: false,
   },
   reducers: {
-    loginRequest(state, action) {
+    loginRequest(state) {
       state.loading = true;
       state.isAuthenticated = false;
       state.user = {};
@@ -39,11 +39,9 @@ const userSlice = createSlice({
     },
     logoutFailed(state, action) {
       state.loading = false;
-      state.isAuthenticated = state.isAuthenticated;
-      state.user = state.user;
       state.error = action.payload;
     },
-    loadUserRequest(state, action) {
+    loadUserRequest(state) {
       state.loading = true;
       state.isAuthenticated = false;
       state.user = {};
@@ -61,7 +59,7 @@ const userSlice = createSlice({
       state.user = {};
       state.error = action.payload;
     },
-    updatePasswordRequest(state, action) {
+    updatePasswordRequest(state) {
       state.loading = true;
       state.isUpdated = false;
       state.message = null;
@@ -79,7 +77,7 @@ const userSlice = createSlice({
       state.message = null;
       state.error = action.payload;
     },
-    updateProfileRequest(state, action) {
+    updateProfileRequest(state) {
       state.loading = true;
       state.isUpdated = false;
       state.message = null;
@@ -97,33 +95,47 @@ const userSlice = createSlice({
       state.message = null;
       state.error = action.payload;
     },
-    updateProfileResetAfterUpdate(state, action) {
+    updateProfileResetAfterUpdate(state) {
       state.error = null;
       state.isUpdated = false;
       state.message = null;
     },
-    clearAllErrors(state, action) {
+    clearAllErrors(state) {
       state.error = null;
-      state = state.user;
-    },
+    }
   },
 });
 
 export const login = (email, password) => async (dispatch) => {
   dispatch(userSlice.actions.loginRequest());
   try {
-    const { data } = await axiosInstance.post('/api/v1/user/login', { email, password });
+    // First, attempt to login
+    const loginResponse = await axiosInstance.post('/api/v1/user/login', { email, password });
     
-    // Immediately get user data after successful login
-    const userData = await axiosInstance.get('/api/v1/user/me');
-    
-    dispatch(userSlice.actions.loginSuccess(userData.data.user));
-    dispatch(userSlice.actions.clearAllErrors());
-    localStorage.setItem('isAuthenticated', 'true');
+    if (loginResponse.data.success) {
+      // If login is successful, get user data
+      const userResponse = await axiosInstance.get('/api/v1/user/me');
+      
+      if (userResponse.data.success) {
+        dispatch(userSlice.actions.loginSuccess(userResponse.data.user));
+        dispatch(userSlice.actions.clearAllErrors());
+        localStorage.setItem('isAuthenticated', 'true');
+      } else {
+        throw new Error('Failed to get user data after login');
+      }
+    } else {
+      throw new Error(loginResponse.data.message || 'Login failed');
+    }
   } catch (error) {
     console.error('Login error:', error);
-    dispatch(userSlice.actions.loginFailed(error.response?.data?.message || 'Login failed'));
+    const errorMessage = error.response?.data?.message || error.message || 'Login failed';
+    dispatch(userSlice.actions.loginFailed(errorMessage));
     localStorage.removeItem('isAuthenticated');
+    
+    // If the error is due to invalid credentials, we can be more specific
+    if (error.response?.status === 401) {
+      dispatch(userSlice.actions.loginFailed('Invalid email or password'));
+    }
   }
 };
 
@@ -137,24 +149,43 @@ export const getUser = () => async (dispatch) => {
   dispatch(userSlice.actions.loadUserRequest());
   try {
     const { data } = await axiosInstance.get('/api/v1/user/me');
-    dispatch(userSlice.actions.loadUserSuccess(data.user));
-    dispatch(userSlice.actions.clearAllErrors());
+    
+    if (data.success) {
+      dispatch(userSlice.actions.loadUserSuccess(data.user));
+      dispatch(userSlice.actions.clearAllErrors());
+    } else {
+      throw new Error(data.message || 'Failed to get user data');
+    }
   } catch (error) {
     console.error('Get user error:', error);
-    dispatch(userSlice.actions.loadUserFailed(error.response?.data?.message || 'Failed to get user'));
-    localStorage.removeItem('isAuthenticated');
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to get user';
+    dispatch(userSlice.actions.loadUserFailed(errorMessage));
+    
+    // If we get a 401, clear the authentication state
+    if (error.response?.status === 401) {
+      localStorage.removeItem('isAuthenticated');
+    }
   }
 };
 
 export const logout = () => async (dispatch) => {
   try {
     const { data } = await axiosInstance.get('/api/v1/user/logout');
-    dispatch(userSlice.actions.logoutSuccess(data.message));
-    dispatch(userSlice.actions.clearAllErrors());
-    localStorage.removeItem('isAuthenticated');
+    
+    if (data.success) {
+      dispatch(userSlice.actions.logoutSuccess(data.message));
+      dispatch(userSlice.actions.clearAllErrors());
+      localStorage.removeItem('isAuthenticated');
+    } else {
+      throw new Error(data.message || 'Logout failed');
+    }
   } catch (error) {
     console.error('Logout error:', error);
-    dispatch(userSlice.actions.logoutFailed(error.response?.data?.message || 'Logout failed'));
+    const errorMessage = error.response?.data?.message || error.message || 'Logout failed';
+    dispatch(userSlice.actions.logoutFailed(errorMessage));
+    
+    // Even if the server request fails, we should still clear local auth state
+    localStorage.removeItem('isAuthenticated');
   }
 };
 
