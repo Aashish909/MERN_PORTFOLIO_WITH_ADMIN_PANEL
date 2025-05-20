@@ -109,19 +109,27 @@ const userSlice = createSlice({
 export const login = (email, password) => async (dispatch) => {
   dispatch(userSlice.actions.loginRequest());
   try {
-    // First, attempt to login
+    // Make login request
     const loginResponse = await axiosInstance.post('/api/v1/user/login', { email, password });
     
     if (loginResponse.data.success) {
-      // If login is successful, get user data
-      const userResponse = await axiosInstance.get('/api/v1/user/me');
+      // Store the token in localStorage for persistence
+      localStorage.setItem('isAuthenticated', 'true');
       
-      if (userResponse.data.success) {
-        dispatch(userSlice.actions.loginSuccess(userResponse.data.user));
-        dispatch(userSlice.actions.clearAllErrors());
-        localStorage.setItem('isAuthenticated', 'true');
-      } else {
-        throw new Error('Failed to get user data after login');
+      // Get user data using the same axios instance (which will include the cookie)
+      try {
+        const userResponse = await axiosInstance.get('/api/v1/user/me');
+        if (userResponse.data.success) {
+          dispatch(userSlice.actions.loginSuccess(userResponse.data.user));
+          dispatch(userSlice.actions.clearAllErrors());
+        } else {
+          throw new Error(userResponse.data.message || 'Failed to get user data');
+        }
+      } catch (userError) {
+        console.error('Get user error:', userError);
+        // If getting user data fails, clear auth state
+        localStorage.removeItem('isAuthenticated');
+        throw userError;
       }
     } else {
       throw new Error(loginResponse.data.message || 'Login failed');
@@ -131,11 +139,6 @@ export const login = (email, password) => async (dispatch) => {
     const errorMessage = error.response?.data?.message || error.message || 'Login failed';
     dispatch(userSlice.actions.loginFailed(errorMessage));
     localStorage.removeItem('isAuthenticated');
-    
-    // If the error is due to invalid credentials, we can be more specific
-    if (error.response?.status === 401) {
-      dispatch(userSlice.actions.loginFailed('Invalid email or password'));
-    }
   }
 };
 
@@ -161,10 +164,8 @@ export const getUser = () => async (dispatch) => {
     const errorMessage = error.response?.data?.message || error.message || 'Failed to get user';
     dispatch(userSlice.actions.loadUserFailed(errorMessage));
     
-    // If we get a 401, clear the authentication state
-    if (error.response?.status === 401) {
-      localStorage.removeItem('isAuthenticated');
-    }
+    // If we get a 401 or any other error, clear the authentication state
+    localStorage.removeItem('isAuthenticated');
   }
 };
 

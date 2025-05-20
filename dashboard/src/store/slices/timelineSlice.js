@@ -1,8 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-
-// Dynamic backend URL from environment
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+import axiosInstance from "@/utils/axios";
 
 const timelineSlice = createSlice({
   name: "timeline",
@@ -72,32 +69,22 @@ const timelineSlice = createSlice({
 export const getAllTimeline = () => async (dispatch) => {
   dispatch(timelineSlice.actions.getAllTimelineRequest());
   try {
-    const response = await axios.get(`https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/timeline/getall`, {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Credentials': true
-      }
-    });
-    dispatch(
-      timelineSlice.actions.getAllTimelineSuccess(response.data.timelines)
-    );
+    const response = await axiosInstance.get('/api/v1/timeline/getall');
+    dispatch(timelineSlice.actions.getAllTimelineSuccess(response.data.timelines));
     dispatch(timelineSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(
-      timelineSlice.actions.getAllTimelineFailed(error.response.data.message)
-    );
+    console.error('Get timeline error:', error);
+    dispatch(timelineSlice.actions.getAllTimelineFailed(error.response?.data?.message || 'Failed to get timeline'));
   }
 };
 
 export const addNewTimeline = (data) => async (dispatch) => {
   dispatch(timelineSlice.actions.addNewTimelineRequest());
   try {
-    const response = await axios.post(
-      `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/timeline/add`,
+    const response = await axiosInstance.post(
+      '/api/v1/timeline/add',
       data,
       {
-        withCredentials: true,
         headers: { 
           'Content-Type': 'application/json',
           'Access-Control-Allow-Credentials': true
@@ -118,10 +105,9 @@ export const addNewTimeline = (data) => async (dispatch) => {
 export const deleteTimeline = (id) => async (dispatch) => {
   dispatch(timelineSlice.actions.deleteTimelineRequest());
   try {
-    const response = await axios.delete(
-      `https://mern-portfolio-with-admin-panel-backend.onrender.com/api/v1/timeline/delete/${id}`,
+    const response = await axiosInstance.delete(
+      `/api/v1/timeline/delete/${id}`,
       { 
-        withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Credentials': true

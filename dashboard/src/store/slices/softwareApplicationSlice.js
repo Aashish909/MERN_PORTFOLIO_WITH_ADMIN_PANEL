@@ -1,7 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BACKEND_URL = "https://mern-portfolio-with-admin-panel-backend.onrender.com";
+import axiosInstance from "@/utils/axios";
 
 const softwareApplicationSlice = createSlice({
   name: "softwareApplications",
@@ -68,32 +66,14 @@ const softwareApplicationSlice = createSlice({
 });
 
 export const getAllSoftwareApplications = () => async (dispatch) => {
-  dispatch(
-    softwareApplicationSlice.actions.getAllsoftwareApplicationsRequest()
-  );
+  dispatch(softwareApplicationSlice.actions.getAllsoftwareApplicationsRequest());
   try {
-    const response = await axios.get(
-      `${BACKEND_URL}/api/v1/softwareapplication/getall`,
-      { 
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Credentials': true
-        }
-      }
-    );
-    dispatch(
-      softwareApplicationSlice.actions.getAllsoftwareApplicationsSuccess(
-        response.data.softwareApplications
-      )
-    );
+    const response = await axiosInstance.get('/api/v1/softwareapplication/getall');
+    dispatch(softwareApplicationSlice.actions.getAllsoftwareApplicationsSuccess(response.data.softwareApplications));
     dispatch(softwareApplicationSlice.actions.clearAllErrors());
   } catch (error) {
-    dispatch(
-      softwareApplicationSlice.actions.getAllsoftwareApplicationsFailed(
-        error.response.data.message
-      )
-    );
+    console.error('Get software applications error:', error);
+    dispatch(softwareApplicationSlice.actions.getAllsoftwareApplicationsFailed(error.response?.data?.message || 'Failed to get software applications'));
   }
 };
 
@@ -102,11 +82,10 @@ export const addNewSoftwareApplication = (data) => async (dispatch) => {
     softwareApplicationSlice.actions.addNewsoftwareApplicationsRequest()
   );
   try {
-    const response = await axios.post(
-      `${BACKEND_URL}/api/v1/softwareapplication/add`,
+    const response = await axiosInstance.post(
+      '/api/v1/softwareapplication/add',
       data,
       {
-        withCredentials: true,
         headers: { 
           'Content-Type': 'multipart/form-data',
           'Access-Control-Allow-Credentials': true
@@ -133,10 +112,9 @@ export const deleteSoftwareApplication = (id) => async (dispatch) => {
     softwareApplicationSlice.actions.deletesoftwareApplicationsRequest()
   );
   try {
-    const response = await axios.delete(
-      `${BACKEND_URL}/api/v1/softwareapplication/delete/${id}`,
+    const response = await axiosInstance.delete(
+      `/api/v1/softwareapplication/delete/${id}`,
       {
-        withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Credentials': true

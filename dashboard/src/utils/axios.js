@@ -4,8 +4,7 @@ const axiosInstance = axios.create({
   baseURL: 'https://mern-portfolio-with-admin-panel-backend.onrender.com',
   withCredentials: true,
   headers: {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Credentials': true
+    'Content-Type': 'application/json'
   }
 });
 
@@ -27,22 +26,13 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
-    const originalRequest = error.config;
-    
-    // Handle 401 errors
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      
-      // Clear authentication state
+    // If we get a 401, clear auth state and redirect to login
+    if (error.response?.status === 401) {
       localStorage.removeItem('isAuthenticated');
-      
-      // If we're not already on the login page, redirect there
       if (!window.location.pathname.includes('/login')) {
         window.location.href = '/login';
       }
     }
-    
-    // Always reject the error to be handled by the calling code
     return Promise.reject(error);
   }
 );
